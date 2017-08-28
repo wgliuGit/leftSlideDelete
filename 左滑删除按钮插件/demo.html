@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>右滑动删除</title>
+    <script src="jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            height: 60px;
+            line-height: 60px;
+            width: 100%;
+            border-bottom: 1px solid #e0e0e0;
+            background: #0089ee;
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div  id="header">
+        <ul>
+            <li><span class="t">1</span></li>
+            <li><span class="t">2</span></li>
+            <li><span class="t">3</span></li>
+            <li><span class="t">4</span></li>
+            <li><span class="t">5</span></li>
+            <li><span class="t">6</span></li>
+            <li><span class="t">7</span></li>
+            <li><span class="t">8</span></li>
+            <li><span class="t">9</span></li>
+            <li><span class="t">10</span></li>
+            <li><span class="t">11</span></li>
+            <li><span class="t">12</span></li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="js.js"></script>
+    <script>
+        var slideEle = $("#header").slideEle({
+            parentBox: $("ul"),//被编辑标签的直接父元素标签
+            slideBars: $("li"),//需要滑动删除、编辑的标签组
+            alterTag: $(".t"),//需要修改内容的标签，必须单独用一个标签包裹
+            tagWidth: 100,//右侧按钮宽度,默认80
+        });
+    </script>
+
+</body>
+
+</html>
