@@ -38,7 +38,7 @@
                     //编辑
                     var iptAlter = $(".divSpring .iptAlter")
                     divSpring.show();
-                    $(".divSpring .divSpringYes").one("click", function (e) {
+                    $(".divSpring .divSpringYes").on("click", function (e) {
                         //弹出框点击确定
                         $($this.find(pm.oConfig.alterTag)).html(iptAlter.val().trim());
                         divSpring.hide();
@@ -46,7 +46,7 @@
                         iptAlter.val("");
                         return false;
                     });
-                    $(".divSpring .divSpringNo").one("click", function (e) {
+                    $(".divSpring .divSpringNo").on("click", function (e) {
                         //弹出框点击取消
                         divSpring.hide();
                         iptAlter.val("");
