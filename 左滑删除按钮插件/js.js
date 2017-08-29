@@ -7,6 +7,7 @@
             slideBars: "",//需要滑动删除、编辑的标签组
             alterTag: "",//需要修改内容的标签，必须单独用一个标签包裹
             tagWidth: 80,//右侧按钮宽度
+            editBtn: true,//是否需要编辑按钮
         };
         var pm = this
         pm.oConfig = $.extend(defaults, _aoConfig);
@@ -21,6 +22,7 @@
                 swipeX: null,//判断左右滑动
                 swipeY: null,//判断上下滑动
                 expansion: null,//上一个被操作元素
+                twoWidth: null,//两个按钮的宽度
             }
             var closeTimer;
             defaults.parentBox.css({ "position": "relative", "overflow": "hidden" });
@@ -28,13 +30,19 @@
             var divSpring = $('<div class="divSpring" style="position: fixed;display:none; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, .8); z-index: 99999;"><div class="divSpringBox" style="position: absolute;width: 90%;height: 260px;background: #fff;left: 5%;top: 50%;margin-top: -130px;"><div class="divSpringTitle" style="width: 100%;height: 30px;background: #666;"></div><input type="text" class="iptAlter" placeholder="请输入内容" style="width: 96%;margin: 0 2%;height: 40px;margin-top: 20px;border: 0;border-bottom: 1px solid #333;outline:none;font-size: 14px;"><div class="divSpringBtnBox" style="position: absolute;bottom: 0;height: 52px;line-height: 52px;width: 100%;text-align: center;font-size: 18px;"><a href="javascript:;" class="divSpringAbtn divSpringNo" style="display: inline-block;width: 50%;background: #d81313;height: 100%;text-decoration: none;color: #fff;">取 消</a><a href="javascript:;" class="divSpringAbtn divSpringYes" style="display: inline-block;width: 50%;background: #1f80d6;height: 100%;text-decoration: none;color: #fff;">确 定</a></div></div></div>').appendTo("body");
             defaults.slideBars.each(function (i) {
                 var $this = $(this);
-                $("<a class='spnbtn spnEdit' style='position: absolute;background: #ffbe00;width:" + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth + "px; z-index: 99999;'>编辑</a><a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth * 2 + "px; z-index: 99999;'>删除</a>").appendTo($this);
-                $this.find(".spnDel").on("click",function (e) {
+                if (defaults.editBtn) {
+                    current.twoWidth = defaults.tagWidth * 2
+                    $("<a class='spnbtn spnEdit' style='position: absolute;background: #ffbe00;width:" + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth + "px; z-index: 99999;'>编辑</a><a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo($this);
+                } else {
+                    current.twoWidth = defaults.tagWidth
+                    $("<a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo($this);
+                }
+                $this.find(".spnDel").on("click", function (e) {
                     //删除
                     $(this).parent().remove();
                     return false;
                 });
-                $this.find(".spnEdit").on("click",function (e) {
+                $this.find(".spnEdit").on("click", function (e) {
                     //编辑
                     var iptAlter = $(".divSpring .iptAlter")
                     divSpring.show();
@@ -75,15 +83,15 @@
                     if (current.swipeX && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) > 0) {
                         var x = current.mx - current.sx;
                         var xl = $this.offset().left
-                        if (x < -(defaults.tagWidth*2)) {
-                            x = -(defaults.tagWidth*2)
+                        if (x < -current.twoWidth) {
+                            x = -current.twoWidth
                         }
                         if (x > 0) {
                             x = 0
                         }
-                        if (xl <= -(defaults.tagWidth*2)) {
+                        if (xl <= -current.twoWidth) {
                             if ((current.mx - current.sx) < 0) {
-                                x = -(defaults.tagWidth*2)
+                                x = -current.twoWidth
                             }
                         }
                         $this.css({ "position": "relative", "left": x + "px" });
@@ -97,7 +105,7 @@
                         e.stopPropagation();
                         if ((current.ex - current.sx) < 0) {
                             //往左滑
-                            if ((current.ex - current.sx) > -defaults.tagWidth) { //右滑
+                            if ((current.ex - current.sx) > -current.twoWidth / 2) { //右滑
                                 if (!!current.expansion) {
                                     if (current.expansion.index() == $this.index()) {
                                         if ((current.ex - current.sx) > -10) {
@@ -107,7 +115,7 @@
                                 }
                                 rightSlide($this);
                             }
-                            if ((current.ex - current.sx) < -defaults.tagWidth) { //左滑
+                            if ((current.ex - current.sx) < -current.twoWidth / 2) { //左滑
                                 leftSlide($this);
                                 current.expansion = $this;
                             }
@@ -124,7 +132,7 @@
                     }
                 });
                 function leftSlide(dom) {
-                    dom.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + defaults.tagWidth * 2 + "px" });
+                    dom.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
                 }
                 function rightSlide(dom) {
                     dom.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "0" });
