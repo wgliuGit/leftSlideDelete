@@ -23,24 +23,25 @@
                 expansion: null,//上一个被操作元素
             }
             var closeTimer;
-            pm.oConfig.parentBox.css({ "position": "relative", "overflow": "hidden" });
-            pm.oConfig.slideBars.css({ "position": "relative", "left": "0" });
+            defaults.parentBox.css({ "position": "relative", "overflow": "hidden" });
+            defaults.slideBars.css({ "position": "relative", "left": "0" });
             var divSpring = $('<div class="divSpring" style="position: fixed;display:none; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, .8); z-index: 99999;"><div class="divSpringBox" style="position: absolute;width: 90%;height: 260px;background: #fff;left: 5%;top: 50%;margin-top: -130px;"><div class="divSpringTitle" style="width: 100%;height: 30px;background: #666;"></div><input type="text" class="iptAlter" placeholder="请输入内容" style="width: 96%;margin: 0 2%;height: 40px;margin-top: 20px;border: 0;border-bottom: 1px solid #333;outline:none;font-size: 14px;"><div class="divSpringBtnBox" style="position: absolute;bottom: 0;height: 52px;line-height: 52px;width: 100%;text-align: center;font-size: 18px;"><a href="javascript:;" class="divSpringAbtn divSpringNo" style="display: inline-block;width: 50%;background: #d81313;height: 100%;text-decoration: none;color: #fff;">取 消</a><a href="javascript:;" class="divSpringAbtn divSpringYes" style="display: inline-block;width: 50%;background: #1f80d6;height: 100%;text-decoration: none;color: #fff;">确 定</a></div></div></div>').appendTo("body");
-            pm.oConfig.slideBars.each(function (i) {
+            defaults.slideBars.each(function (i) {
                 var $this = $(this);
                 $("<a class='spnbtn spnEdit' style='position: absolute;background: #ffbe00;width:" + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth + "px; z-index: 99999;'>编辑</a><a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth * 2 + "px; z-index: 99999;'>删除</a>").appendTo($this);
-                $this.find(".spnDel").click(function (e) {
+                $this.find(".spnDel").on("click",function (e) {
                     //删除
                     $(this).parent().remove();
+                    console.log($this)
                     return false;
                 });
-                $this.find(".spnEdit").click(function (e) {
+                $this.find(".spnEdit").on("click",function (e) {
                     //编辑
                     var iptAlter = $(".divSpring .iptAlter")
                     divSpring.show();
                     $(".divSpring .divSpringYes").on("click", function (e) {
                         //弹出框点击确定
-                        $($this.find(pm.oConfig.alterTag)).html(iptAlter.val().trim());
+                        $($this.find(defaults.alterTag)).html(iptAlter.val().trim());
                         divSpring.hide();
                         rightSlide($this)
                         iptAlter.val("");
@@ -75,15 +76,15 @@
                     if (current.swipeX && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) > 0) {
                         var x = current.mx - current.sx;
                         var xl = $this.offset().left
-                        if (x < -120) {
-                            x = -120
+                        if (x < -(defaults.tagWidth*2)) {
+                            x = -(defaults.tagWidth*2)
                         }
                         if (x > 0) {
                             x = 0
                         }
-                        if (xl <= -120) {
+                        if (xl <= -(defaults.tagWidth*2)) {
                             if ((current.mx - current.sx) < 0) {
-                                x = -120
+                                x = -(defaults.tagWidth*2)
                             }
                         }
                         $this.css({ "position": "relative", "left": x + "px" });
@@ -94,11 +95,10 @@
                     current.ey = e.originalEvent.changedTouches[0].pageY;
                     // 左右滑动
                     if (current.swipeX && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) > 0) {
-                        // 阻止事件冒泡
                         e.stopPropagation();
                         if ((current.ex - current.sx) < 0) {
                             //往左滑
-                            if ((current.ex - current.sx) > -60) { //右滑
+                            if ((current.ex - current.sx) > -defaults.tagWidth) { //右滑
                                 if (!!current.expansion) {
                                     if (current.expansion.index() == $this.index()) {
                                         if ((current.ex - current.sx) > -10) {
@@ -108,7 +108,7 @@
                                 }
                                 rightSlide($this);
                             }
-                            if ((current.ex - current.sx) < -60) { //左滑
+                            if ((current.ex - current.sx) < -defaults.tagWidth) { //左滑
                                 leftSlide($this);
                                 current.expansion = $this;
                             }
@@ -120,6 +120,7 @@
                     }
                     // 上下滑动
                     if (current.swipeY && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) < 0) {
+                        rightSlide($this);
                         current.swipeX = false;
                     }
                 });
