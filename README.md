@@ -1,5 +1,5 @@
 "leftSlideDelete" 
-
+# 左滑删除按钮插件
 ## 调用方法
 ```
 var slideEle = $("#header").slideEle({
