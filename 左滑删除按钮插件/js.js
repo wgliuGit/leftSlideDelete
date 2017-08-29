@@ -32,7 +32,6 @@
                 $this.find(".spnDel").on("click",function (e) {
                     //删除
                     $(this).parent().remove();
-                    console.log($this)
                     return false;
                 });
                 $this.find(".spnEdit").on("click",function (e) {
