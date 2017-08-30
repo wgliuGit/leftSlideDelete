@@ -28,15 +28,15 @@
             defaults.parentBox.css({ "position": "relative", "overflow": "hidden" });
             defaults.slideBars.css({ "position": "relative", "left": "0" });
             var divSpring = $('<div class="divSpring" style="position: fixed;display:none; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, .8); z-index: 99999;"><div class="divSpringBox" style="position: absolute;width: 90%;height: 260px;background: #fff;left: 5%;top: 50%;margin-top: -130px;"><div class="divSpringTitle" style="width: 100%;height: 30px;background: #666;"></div><input type="text" class="iptAlter" placeholder="请输入内容" style="width: 96%;margin: 0 2%;height: 40px;margin-top: 20px;border: 0;border-bottom: 1px solid #333;outline:none;font-size: 14px;"><div class="divSpringBtnBox" style="position: absolute;bottom: 0;height: 52px;line-height: 52px;width: 100%;text-align: center;font-size: 18px;"><a href="javascript:;" class="divSpringAbtn divSpringNo" style="display: inline-block;width: 50%;background: #d81313;height: 100%;text-decoration: none;color: #fff;">取 消</a><a href="javascript:;" class="divSpringAbtn divSpringYes" style="display: inline-block;width: 50%;background: #1f80d6;height: 100%;text-decoration: none;color: #fff;">确 定</a></div></div></div>').appendTo("body");
+            if (defaults.editBtn) {
+                current.twoWidth = defaults.tagWidth * 2
+                $("<a class='spnbtn spnEdit' style='position: absolute;background: #ffbe00;width:" + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth + "px; z-index: 99999;'>编辑</a><a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo(defaults.slideBars);
+            } else {
+                current.twoWidth = defaults.tagWidth
+                $("<a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo(defaults.slideBars);
+            }
             defaults.slideBars.each(function (i) {
                 var $this = $(this);
-                if (defaults.editBtn) {
-                    current.twoWidth = defaults.tagWidth * 2
-                    $("<a class='spnbtn spnEdit' style='position: absolute;background: #ffbe00;width:" + defaults.tagWidth + "px;height: 100%;right: -" + defaults.tagWidth + "px; z-index: 99999;'>编辑</a><a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo($this);
-                } else {
-                    current.twoWidth = defaults.tagWidth
-                    $("<a class='spnbtn spnDel' style='position: absolute;background: #f60000;width: " + defaults.tagWidth + "px;height: 100%;right: -" + current.twoWidth + "px; z-index: 99999;'>删除</a>").appendTo($this);
-                }
                 $this.find(".spnDel").on("click", function (e) {
                     //删除
                     $(this).parent().remove();
@@ -50,7 +50,7 @@
                         //弹出框点击确定
                         $($this.find(defaults.alterTag)).html(iptAlter.val().trim());
                         divSpring.hide();
-                        rightSlide($this)
+                        $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "0" });
                         iptAlter.val("");
                         return false;
                     });
@@ -69,10 +69,11 @@
                     if (current.expansion) { //判断是否展开，如果展开则收起
                         if (current.expansion.index() == $this.index()) {
                             if ($this.offset().left <= -120) {
-                                leftSlide($this)
+                                $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
+                                current.expansion = $this;
                             }
                         } else {
-                            rightSlide(current.expansion)
+                            current.expansion.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
                         }
                     }
                 });
@@ -108,35 +109,29 @@
                             if ((current.ex - current.sx) > -current.twoWidth / 2) { //右滑
                                 if (!!current.expansion) {
                                     if (current.expansion.index() == $this.index()) {
-                                        if ((current.ex - current.sx) > -10) {
+                                        if ((current.ex - current.sx) > -5) {
                                             return false;
                                         }
                                     }
                                 }
-                                rightSlide($this);
+                                $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
                             }
                             if ((current.ex - current.sx) < -current.twoWidth / 2) { //左滑
-                                leftSlide($this);
+                                $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
                                 current.expansion = $this;
                             }
                         } else if ((current.ex - current.sx) > 0) {
                             //往右滑
-                            rightSlide($this);
+                            $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
                         }
                         current.swipeY = false;
                     }
                     // 上下滑动
                     if (current.swipeY && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) < 0) {
-                        rightSlide($this);
+                        $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
                         current.swipeX = false;
                     }
                 });
-                function leftSlide(dom) {
-                    dom.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
-                }
-                function rightSlide(dom) {
-                    dom.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "0" });
-                }
             });
         }()
         return this;
