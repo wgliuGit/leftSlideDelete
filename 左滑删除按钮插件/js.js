@@ -19,10 +19,11 @@
                 my: null,//移动Y坐标
                 ex: null,//离开X坐标
                 ey: null,//离开Y坐标
-                swipeX: null,//判断左右滑动
-                swipeY: null,//判断上下滑动
+                swipeX: true,//判断左右滑动
+                swipeY: true,//判断上下滑动
                 expansion: null,//上一个被操作元素
                 twoWidth: null,//两个按钮的宽度
+                isOpen: false,//是否有打开的标签 true有/false没有
             }
             var closeTimer;
             defaults.parentBox.css({ "position": "relative", "overflow": "hidden" });
@@ -50,7 +51,7 @@
                         //弹出框点击确定
                         $($this.find(defaults.alterTag)).html(iptAlter.val().trim());
                         divSpring.hide();
-                        $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "0" });
+                        closeFn($this);
                         iptAlter.val("");
                         return false;
                     });
@@ -66,14 +67,22 @@
                     current.sy = e.originalEvent.targetTouches[0].pageY;
                     current.swipeX = true;
                     current.swipeY = true;
+                    defaults.slideBars.each(function (i, dom) {
+                        if ($(dom).position().left != 0) {
+                            current.isOpen = true
+                            return false;
+                        } else {
+                            current.isOpen = false;
+                        }
+                    })
                     if (current.expansion) { //判断是否展开，如果展开则收起
                         if (current.expansion.index() == $this.index()) {
-                            if ($this.offset().left <= -120) {
-                                $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
+                            if ($this.offset().left <= -(current.twoWidth * 2)) {
+                                openFn($this);
                                 current.expansion = $this;
                             }
                         } else {
-                            current.expansion.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
+                            closeFn(current.expansion);
                         }
                     }
                 });
@@ -95,7 +104,11 @@
                                 x = -current.twoWidth
                             }
                         }
-                        $this.css({ "position": "relative", "left": x + "px" });
+                        if (current.isOpen) {
+                            return;
+                        } else {
+                            $this.css({ "position": "relative", "left": x + "px" });
+                        }
                     }
                 });
                 $this.on('touchend', function (e) {
@@ -103,10 +116,10 @@
                     current.ey = e.originalEvent.changedTouches[0].pageY;
                     // 左右滑动
                     if (current.swipeX && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) > 0) {
-                        e.stopPropagation();
+                        // e.stopPropagation();
                         if ((current.ex - current.sx) < 0) {
                             //往左滑
-                            if ((current.ex - current.sx) > -current.twoWidth / 2) { //右滑
+                            if ((current.ex - current.sx) > -(current.twoWidth / 2)) { //右滑
                                 if (!!current.expansion) {
                                     if (current.expansion.index() == $this.index()) {
                                         if ((current.ex - current.sx) > -5) {
@@ -114,25 +127,36 @@
                                         }
                                     }
                                 }
-                                $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
+                                closeFn($this);
                             }
-                            if ((current.ex - current.sx) < -current.twoWidth / 2) { //左滑
-                                $this.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
+                            if ((current.ex - current.sx) < -(current.twoWidth / 2)) { //左滑
+                                if (current.isOpen) {
+                                    closeFn($this);
+                                    return false;
+                                } else {
+                                    openFn($this);
+                                }
                                 current.expansion = $this;
                             }
                         } else if ((current.ex - current.sx) > 0) {
                             //往右滑
-                            $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
+                            closeFn($this);
                         }
                         current.swipeY = false;
                     }
                     // 上下滑动
                     if (current.swipeY && Math.abs(current.mx - current.sx) - Math.abs(current.my - current.sy) < 0) {
-                        $this.css({ "-webkit-transition": " all 0.1s ease-out", "transition": "all 0.1s ease-out", "position": "relative", "left": "0" });
+                        closeFn($this);
                         current.swipeX = false;
                     }
                 });
             });
+            function openFn(d) {
+                d.css({ "-webkit-transition": " all 0.3s ease-out", "transition": "all 0.3s ease-out", "position": "relative", "left": "-" + current.twoWidth + "px" });
+            };
+            function closeFn(d) {
+                d.css({ "-webkit-transition": " all 0.2s ease-out", "transition": "all 0.2s ease-out", "position": "relative", "left": "0" });
+            };
         }()
         return this;
     };
