@@ -13,4 +13,4 @@
 
 
 ### Demo地址
-[demo](https://13212397668.github.io/leftSlideDelete/%E5%B7%A6%E6%BB%91%E5%88%A0%E9%99%A4%E6%8C%89%E9%92%AE%E6%8F%92%E4%BB%B6/demo.html)
+[demo](https://wgliuGit.github.io/leftSlideDelete/左滑删除按钮插件/demo.html)
